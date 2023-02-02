@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/ul.css">
+</head>
+<body>
+    <ul>
+        <!-- sec:authorize="isAnonymous()" - 익명 상태인 경우 즉, 비로그인 상태일 경우 보여준다. -->
+        <li><input type="button" value="로그인" sec:authorize="isAnonymous()" onclick="location.href='/loginform'"></li>
+        <!-- sec:authorize="isAuthenticated()" - 인증 상태인 경우 즉, 로그인 상태일 경우 보여준다. -->
+        <li><input type="button" value="로그아웃" sec:authorize="isAuthenticated()" onclick="location.href='/logout'"></li>
+    </ul>
+</body>
+</html>
