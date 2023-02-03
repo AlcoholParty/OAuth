@@ -1,5 +1,6 @@
 package com.springsecurity.oauth.service;
 
+import com.springsecurity.oauth.controller.SignUpController;
 import com.springsecurity.oauth.entity.Member;
 import com.springsecurity.oauth.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,15 +31,26 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
         String registrationId = userRequest.getClientRegistration()
-                                           .getRegistrationId();
+                                           .getRegistrationId(); // 플랫폼 이름값
         String userNameAttributeName = userRequest.getClientRegistration()
                                                   .getProviderDetails()
                                                   .getUserInfoEndpoint()
-                                                  .getUserNameAttributeName();
+                                                  .getUserNameAttributeName(); // oAuth2User에서 sub값에 해당하는 키값
+        String emailId = "email"; // oAuth2User에서 email값에 해당하는 키값
 
-        Member.oauthGoogle oauthGoogle = Member.oauthGoogle.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
+        Member.oauthGoogle oauthGoogle = Member.oauthGoogle.of(registrationId, emailId, oAuth2User.getAttributes());
 
-        Member member = saveOrUpdate(oauthGoogle);
+        Member entityMember = oauthGoogle.toEntity();
+        System.out.println("0 : " + oauthGoogle);
+        System.out.println("1 : " + entityMember.getEmailId());
+        Member member = memberRepository.findByEmailId(entityMember.getEmailId());
+        System.out.println("2 : " + member);
+
+        if ( member == null ) {
+            new SignUpController().googleJoinForm();
+        }
+
+        Member loginMember = login(oauthGoogle);
 
         httpSession.setAttribute("user", new Member.SessionUserDTO(oauthGoogle));
 
@@ -47,8 +59,8 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
                                                                                       oauthGoogle.getNameAttributeKey());
     }
 
-    private Member saveOrUpdate(Member.oauthGoogle oauthGoogle) {
+    private Member login(Member.oauthGoogle oauthGoogle) {
         Member member = oauthGoogle.toEntity();
-        return memberRepository.save(member);
+        return memberRepository.findByEmailId(member.getEmailId());
     }
 }

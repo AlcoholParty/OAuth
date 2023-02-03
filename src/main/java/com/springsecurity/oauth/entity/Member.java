@@ -123,32 +123,36 @@ public class Member {
     public static class oauthGoogle {
         private Map<String, Object> attributes;
         private String nameAttributeKey;
-        private String name;
         private String emailId;
+        private String name;
+        private String platform;
 
         public Member toEntity() {
             return Member.builder()
                     .name(name)
                     .emailId(emailId)
+                    .platform(platform)
                     .roleName("USER")
                     .profileImage("noImage.jpeg")
                     .build();
         }
 
         @Builder
-        public oauthGoogle(Map<String, Object> attributes, String nameAttributeKey, String name, String emailId) {
+        public oauthGoogle(Map<String, Object> attributes, String nameAttributeKey, String emailId, String name, String platform) {
             this.attributes = attributes;
             this.nameAttributeKey = nameAttributeKey;
-            this.name = name;
             this.emailId = emailId;
+            this.name = name;
+            this.platform = platform;
         }
 
-        public static oauthGoogle of(String registrationId, String userNameAttributeName, Map<String, Object> oAuth2User) {
+        public static oauthGoogle of(String registrationId, String emailId, Map<String, Object> oAuth2User) {
             return oauthGoogle.builder()
-                    .name((String) oAuth2User.get("name"))
-                    .emailId((String) oAuth2User.get("email"))
                     .attributes(oAuth2User)
-                    .nameAttributeKey(userNameAttributeName)
+                    .nameAttributeKey(emailId)
+                    .emailId((String) oAuth2User.get("email"))
+                    .name((String) oAuth2User.get("name"))
+                    .platform(registrationId)
                     .build();
         }
     }

@@ -1,6 +1,7 @@
 package com.springsecurity.oauth.controller;
 
 import com.springsecurity.oauth.entity.Member;
+import com.springsecurity.oauth.service.SignUpOAuthService;
 import com.springsecurity.oauth.service.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +16,9 @@ public class SignUpController {
     // 회원가입 및 로그인 인증 서비스
     @Autowired
     SignUpService signUpService;
+
+    @Autowired
+    SignUpOAuthService signUpOAuthService;
 
     // 비밀번호 암호화 메소드
     @Autowired
@@ -35,6 +39,11 @@ public class SignUpController {
         // 0. Entity 대신 DTO를 사용하기 위해 사용할 DTO를 모델로 바인딩 한다.
         model.addAttribute("memberDto", new Member.rqJoinMember());
         return "SignUp/JoinForm";
+    }
+
+    @GetMapping("/loginform/authentication")
+    public String googleJoinForm() {
+        return "SignUp/GoogleJoinForm";
     }
 
     // 회원가입 진행 URL

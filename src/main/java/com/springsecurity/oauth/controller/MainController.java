@@ -5,11 +5,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
+
 @Controller
 public class MainController {
     // 메인 페이지
     @GetMapping(value = "/")
-    public String main() {
+    public String main(Principal principal) {
+        if ( principal == null ) {
+            return "redirect:/loginform";
+        }
+        System.out.println("ID : " + principal.getName());
         return "Main";
     }
 
