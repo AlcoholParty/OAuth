@@ -24,18 +24,22 @@
         <input type="submit" value="로그인">
         <input name="btnJoin" type="button" value="회원가입" onclick="location.href='/joinform'">
     </form>
+
     <!--<a href="/oauth2/authorization/google" class="btn btn-lg btn-primary">Google Login</a>-->
-    <a href="https://accounts.google.com/o/oauth2/v2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.gender.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.phonenumbers.read&access_type=online&include_granted_scopes=true&response_type=code&state=state_parameter_passthrough_value&redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Floginform%2Fgoogle%2Ftoken&client_id=346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com">구글 로그인</a>
-    <form id="google">
-        <input type="button" onclick="googleLogin();" value="구글 로그인">
-    </form>
+    <a href="https://accounts.google.com/o/oauth2/v2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.gender.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.phonenumbers.read&access_type=offline&include_granted_scopes=true&response_type=code&state=state_parameter_passthrough_value&redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Floginform%2Fgoogle%2Ftoken&client_id=346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com">구글 로그인</a>
+    <a th:href="${googleUrl}">찐 구글 로그인</a>
     <form id="token" action="https://www.googleapis.com/oauth2/v4/token" method="post" enctype="application/x-www-form-urlencoded">
         code : <input type="text" id="code" name="code" th:value="${param.code}"><br>
         client_id : <input type="text" name="client_id" value="346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com"><br>
-        client_secret : <input type="text" name="client_secret" value="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">
+        client_secret : <input type="text" name="client_secret" value="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"><br>
         redirect_uri : <input type="text" name="redirect_uri" value="http://localhost:8888/loginform"><br>
         grant_type : <input type="text" name="grant_type" value="authorization_code">
-        <input type="button" onclick="googleCode();">
+    </form>
+    <div th:if="${accessToken != null}" th:text="${accessToken}"></div>
+    <form th:if="${emailId != null}" id="google">
+        <input name="emailId" type="text" th:value="${emailId}">
+        <input name="name" type="text" th:value="${name}">
+        <input type="button" onclick="googleLogin();" value="구글 로그인">
     </form>
     <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
     <!-- 아이디 및 비밀번호가 틀릴 경우 에러 알림창이 등장 -->
@@ -57,14 +61,6 @@
     <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
     <script>
         function googleLogin() {
-            location.href = "https://accounts.google.com/o/oauth2/v2/auth?scope=" + "https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.gender.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.phonenumbers.read" +
-                            "&access_type=" + "online" +
-                            "&include_granted_scopes=" + "true" +
-                            "&response_type=" + "code" +
-                            "&state=" + "state_parameter_passthrough_value" +
-                            "&redirect_uri=" + "http%3A%2F%2Flocalhost%3A8888%2Floginform" +
-                            "&client_id=" + "346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com";
-            //googleCode();
         }
         async function googleCode() {
             let code  = document.getElementById("code").value;

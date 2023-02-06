@@ -92,4 +92,40 @@ public class GoogleLogin {
         }
         return returnNode;
     }
+
+    public static JsonNode getGooglePeople(String authorize_code) {
+        final String RequestUrl = "https://people.googleapis.com/v1/people/me";
+
+        final HttpClient client = HttpClientBuilder.create().build();
+        final HttpGet get = new HttpGet(RequestUrl);
+
+        JsonNode returnNode = null;
+
+        // add header
+        get.addHeader("personFields", "Bearer " + "birthdays");
+        get.addHeader("key", "Bearer " + "AIzaSyDr3XNA_3hT9py0zIaHxQwIBVibhuIC_3E");
+        get.addHeader("access_token", "Bearer " + authorize_code);
+
+        try {
+            final HttpResponse response = client.execute(get);
+            final int responseCode = response.getStatusLine().getStatusCode();
+
+            ObjectMapper mapper = new ObjectMapper();
+            returnNode = mapper.readTree(response.getEntity().getContent());
+
+            System.out.println("\nSending 'GET' request to URL : " + RequestUrl);
+            System.out.println("Response Code : " + responseCode);
+
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // clear resources
+        }
+        return returnNode;
+    }
 }

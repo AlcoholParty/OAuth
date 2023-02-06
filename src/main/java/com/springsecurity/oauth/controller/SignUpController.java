@@ -62,7 +62,20 @@ public class SignUpController {
         JsonNode jsonToken = GoogleLogin.getAccessToken(code);
         String accessToken = jsonToken.get("access_token").toString();
         System.out.println("access_token : " + accessToken);
-        return "SignUp/GoogleAccessToken";
+        model.addAttribute("accessToken", accessToken);
+
+        JsonNode userInfo = GoogleLogin.getGoogleUserInfo(accessToken);
+        System.out.println(userInfo.toString());
+        String emailId = userInfo.get("email").asText();
+        model.addAttribute("emailId", emailId);
+        System.out.println(emailId);
+        String name = userInfo.get("name").asText();
+        model.addAttribute("name", name);
+        System.out.println(name);
+
+        JsonNode people = GoogleLogin.getGooglePeople(accessToken);
+        System.out.println(people);
+        return "SignUp/LoginForm";
     }
     @PostMapping("/loginform/google/authentication")
     @ResponseBody

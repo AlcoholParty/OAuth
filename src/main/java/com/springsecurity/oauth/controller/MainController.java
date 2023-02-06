@@ -26,11 +26,19 @@ public class MainController {
     public String loginform(@RequestParam(value = "error", required = false) String error, // URL 파라미터로 넘어오는 에러 체크값이 있을 경우 받는다.
                             @RequestParam(value = "errorMsg", required = false) String errorMsg, // URL 파라미터로 넘어오는 에러 메세지가 있을 경우 받는다.
                             Model model) {
+        String googleUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
+                           "scope=" + "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/user.birthday.read https://www.googleapis.com/auth/user.gender.read https://www.googleapis.com/auth/user.phonenumbers.read" +
+                           "&access_type=" + "offline" +
+                           "&include_granted_scopes=" + "true" +
+                           "&response_type=" + "code" +
+                           "&state=" + "security_token%3D138r5719ru3e1%26url%3Dhttps://oauth2.example.com/token" +
+                           "&redirect_uri=" + "http://localhost:8888/loginform/google/token" +
+                           "&client_id=" + "346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com";
         // 에러 체크값을 모델로 바인딩 한다.
         model.addAttribute("error", error);
         // 에러 메세지를 모델로 바인딩 한다.
         model.addAttribute("errorMsg", errorMsg);
-        model.addAttribute("googleDTO", new Member.rqGoogleMember());
+        model.addAttribute("googleUrl", googleUrl);
         return "SignUp/LoginForm";
     }
 
