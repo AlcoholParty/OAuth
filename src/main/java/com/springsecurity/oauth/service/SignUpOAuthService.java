@@ -1,6 +1,5 @@
 package com.springsecurity.oauth.service;
 
-import com.springsecurity.oauth.controller.SignUpController;
 import com.springsecurity.oauth.entity.Member;
 import com.springsecurity.oauth.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +21,11 @@ import java.util.Collections;
 public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     @Autowired
     MemberRepository memberRepository;
-    @Autowired
-    HttpSession httpSession;
+
+    public void join(Member.oauthGoogle oauthGoogle) {
+        Member member = oauthGoogle.toEntity();
+        memberRepository.save(member);
+    }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -41,26 +43,10 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
         Member.oauthGoogle oauthGoogle = Member.oauthGoogle.of(registrationId, emailId, oAuth2User.getAttributes());
 
         Member entityMember = oauthGoogle.toEntity();
-        System.out.println("0 : " + oauthGoogle);
-        System.out.println("1 : " + entityMember.getEmailId());
         Member member = memberRepository.findByEmailId(entityMember.getEmailId());
-        System.out.println("2 : " + member);
-
-        if ( member == null ) {
-            new SignUpController().googleJoinForm();
-        }
-
-        Member loginMember = login(oauthGoogle);
-
-        httpSession.setAttribute("user", new Member.SessionUserDTO(oauthGoogle));
 
         return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(member.getRoleName())),
                                                                                       oauthGoogle.getAttributes(),
                                                                                       oauthGoogle.getNameAttributeKey());
-    }
-
-    private Member login(Member.oauthGoogle oauthGoogle) {
-        Member member = oauthGoogle.toEntity();
-        return memberRepository.findByEmailId(member.getEmailId());
     }
 }

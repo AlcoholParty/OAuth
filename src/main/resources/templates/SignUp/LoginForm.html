@@ -2,7 +2,9 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="google-signin-client_id" content="346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com">
     <title>Title</title>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <link rel="stylesheet" href="/css/ul.css">
 </head>
 <body>
@@ -22,8 +24,20 @@
         <input type="submit" value="로그인">
         <input name="btnJoin" type="button" value="회원가입" onclick="location.href='/joinform'">
     </form>
-    <a href="/oauth2/authorization/google" class="btn btn-lg btn-primary">Google Login</a>
-<!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
+    <!--<a href="/oauth2/authorization/google" class="btn btn-lg btn-primary">Google Login</a>-->
+    <a href="https://accounts.google.com/o/oauth2/v2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.gender.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.phonenumbers.read&access_type=online&include_granted_scopes=true&response_type=code&state=state_parameter_passthrough_value&redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Floginform%2Fgoogle%2Ftoken&client_id=346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com">구글 로그인</a>
+    <form id="google">
+        <input type="button" onclick="googleLogin();" value="구글 로그인">
+    </form>
+    <form id="token" action="https://www.googleapis.com/oauth2/v4/token" method="post" enctype="application/x-www-form-urlencoded">
+        code : <input type="text" id="code" name="code" th:value="${param.code}"><br>
+        client_id : <input type="text" name="client_id" value="346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com"><br>
+        client_secret : <input type="text" name="client_secret" value="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">
+        redirect_uri : <input type="text" name="redirect_uri" value="http://localhost:8888/loginform"><br>
+        grant_type : <input type="text" name="grant_type" value="authorization_code">
+        <input type="button" onclick="googleCode();">
+    </form>
+    <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------->
     <!-- 아이디 및 비밀번호가 틀릴 경우 에러 알림창이 등장 -->
     <script th:inline="javascript">
         // 컨트롤러에서 모델로 바인딩한 에러 체크값
@@ -34,6 +48,97 @@
         // 에러 체크값이 true일 경우 에러 알림창 등장
         if ( error == "true" ) {
             alert(errorMsg);
+        }
+    </script>
+
+    <script src="/js/httpRequest.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
+    <script>
+        function googleLogin() {
+            location.href = "https://accounts.google.com/o/oauth2/v2/auth?scope=" + "https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.gender.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.phonenumbers.read" +
+                            "&access_type=" + "online" +
+                            "&include_granted_scopes=" + "true" +
+                            "&response_type=" + "code" +
+                            "&state=" + "state_parameter_passthrough_value" +
+                            "&redirect_uri=" + "http%3A%2F%2Flocalhost%3A8888%2Floginform" +
+                            "&client_id=" + "346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com";
+            //googleCode();
+        }
+        async function googleCode() {
+            let code  = document.getElementById("code").value;
+            alert(code);
+
+            const getToken = await fetch("https://www.googleapis.com/oauth2/v4/token", {
+                method: "post",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                data: {
+                    code: code,
+                    client_id: "346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com",
+                    client_secret: "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",
+                    redirect_uri: "http%3A%2F%2Flocalhost%3A8888%2Floginform",
+                    grant_type: "authorization_code"
+                }
+            }).then(res => res.json());
+            alert(getToken);
+            console.log(getToken);
+<!--            const getMember = await fetch("https://people.googleapis.com/v1/people/me", {-->
+<!--                method: "get",-->
+<!--                headers: { "Content-Type": "application/json" },-->
+<!--                data: {-->
+<!--                    key: "AIzaSyDr3XNA_3hT9py0zIaHxQwIBVibhuIC_3E"-->
+<!--                }-->
+<!--            });-->
+        }
+    </script>
+    <script>
+        async function onSignIn() {
+            const code = await fetch("https://accounts.google.com/o/oauth2/v2/auth" {
+                method: "get",
+                headers: { "Content-Type": "application/json" },
+                data: {
+                    scope: "https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.gender.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.phonenumbers.read",
+                    access_type: "offline",
+                    include_granted_scopes: "true",
+                    response_type: "code",
+                    state: "state_parameter_passthrough_value",
+                    redirect_uri: "http%3A%2F%2Flocalhost%3A8888%2Floginform%2Fgoogle%2Fcode",
+                    client_id: "346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com"
+                }
+            });
+            console.log(code);
+        }
+        function handleCredentialResponse(response) {
+            console.log(response);
+            var f = document.getElementById("google");
+            var profile = jwt_decode(response.credential);
+            var emailId = document.getElementById("emailId");
+            var name = document.getElementById("name");
+            emailId.value = profile.email;
+            name.value = profile.name;
+            console.log(profile.code);
+            console.log("ID: " + profile.sub);
+            console.log('Name: ' + profile.name);
+            console.log("Email: " + profile.email);
+
+            let access_token  = [[${param.access_token}]];
+
+            $.ajax({
+                url: 'https://people.googleapis.com/v1/people/me'
+                , data: {personFields:'birthdays',
+                        key:'AIzaSyDr3XNA_3hT9py0zIaHxQwIBVibhuIC_3E',
+                        'access_token': access_token}
+                , method:'GET'
+            });
+
+            const getToken = await fetch("https://people.googleapis.com/v1/people/me", {
+                method: "get",
+                headers: { "Content-Type": "application/json" },
+                data: {
+                    key: "AIzaSyDr3XNA_3hT9py0zIaHxQwIBVibhuIC_3E"
+                }
+            });
         }
     </script>
 

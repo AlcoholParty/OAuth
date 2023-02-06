@@ -115,6 +115,24 @@ public class Member {
         }
     }
 
+    // Google Request DTO
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @ToString
+    public static class rqGoogleMember {
+        private String emailId;
+        private String name;
+
+        public Member toEntity() {
+            return Member.builder()
+                    .emailId(emailId)
+                    .name(name)
+                    .build();
+        }
+    }
+
     // OAuth - Google DTO
     @Getter
     @Setter

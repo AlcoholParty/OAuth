@@ -1,5 +1,7 @@
 package com.springsecurity.oauth.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.springsecurity.oauth.config.google.GoogleLogin;
 import com.springsecurity.oauth.entity.Member;
 import com.springsecurity.oauth.service.SignUpOAuthService;
 import com.springsecurity.oauth.service.SignUpService;
@@ -7,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpSession;
 
 @Controller
 public class SignUpController {
@@ -41,11 +43,6 @@ public class SignUpController {
         return "SignUp/JoinForm";
     }
 
-    @GetMapping("/loginform/authentication")
-    public String googleJoinForm() {
-        return "SignUp/GoogleJoinForm";
-    }
-
     // 회원가입 진행 URL
     @PostMapping("/joinform/join")
     public String join(Member.rqJoinMember rqJoinMember, Model model) { // 1. 파라미터로 form에서 넘어온 DTO를 받아온다.
@@ -56,9 +53,26 @@ public class SignUpController {
         return "SignUp/Welcome";
     }
 
-    // 로그아웃 페이지
-    @PostMapping("/logout")
-    public String logout() {
-        return "Main";
+    // 구글 로그인
+
+    // 구글 Access_Token 발급 페이지
+    @GetMapping("/loginform/google/token")
+    public String googleAccessToken(String code, HttpSession httpSession, Model model) {
+        System.out.println("code : " + code);
+        JsonNode jsonToken = GoogleLogin.getAccessToken(code);
+        String accessToken = jsonToken.get("access_token").toString();
+        System.out.println("access_token : " + accessToken);
+        return "SignUp/GoogleAccessToken";
+    }
+    @PostMapping("/loginform/google/authentication")
+    @ResponseBody
+    public String google(Member.rqGoogleMember rqGoogleMember) {
+        String ok = "ok";
+        return ok;
+    }
+
+    @GetMapping("/google/joinform")
+    public String googleJoinForm() {
+        return "SignUp/GoogleJoinForm";
     }
 }

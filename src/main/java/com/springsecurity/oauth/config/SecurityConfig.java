@@ -106,6 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .permitAll(); // 사용자 정의 로그인 페이지 접근 권한 승인
 
+        // OAuth 2.0
         http
                 .oauth2Login()
                         .userInfoEndpoint()

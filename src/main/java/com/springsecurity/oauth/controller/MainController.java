@@ -1,8 +1,10 @@
 package com.springsecurity.oauth.controller;
 
+import com.springsecurity.oauth.entity.Member;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
@@ -28,6 +30,12 @@ public class MainController {
         model.addAttribute("error", error);
         // 에러 메세지를 모델로 바인딩 한다.
         model.addAttribute("errorMsg", errorMsg);
+        model.addAttribute("googleDTO", new Member.rqGoogleMember());
         return "SignUp/LoginForm";
+    }
+
+    @PostMapping("/logout")
+    public String logout() {
+        return "Main";
     }
 }
