@@ -29,16 +29,21 @@
     <a href="https://accounts.google.com/o/oauth2/v2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.birthday.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.gender.read%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuser.phonenumbers.read&access_type=offline&include_granted_scopes=true&response_type=code&state=state_parameter_passthrough_value&redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Floginform%2Fgoogle%2Ftoken&client_id=346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com">구글 로그인</a>
     <a th:href="${googleUrl}">찐 구글 로그인</a>
     <form id="token" action="https://www.googleapis.com/oauth2/v4/token" method="post" enctype="application/x-www-form-urlencoded">
-        code : <input type="text" id="code" name="code" th:value="${param.code}"><br>
-        client_id : <input type="text" name="client_id" value="346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com"><br>
-        client_secret : <input type="text" name="client_secret" value="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"><br>
-        redirect_uri : <input type="text" name="redirect_uri" value="http://localhost:8888/loginform"><br>
-        grant_type : <input type="text" name="grant_type" value="authorization_code">
+        code : <input type="text" id="code" name="code" th:value="${param.code}" readonly="true"><br>
+        client_id : <input type="text" name="client_id" value="346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com" readonly="true"><br>
+        client_secret : <input type="text" name="client_secret" value="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" readonly="true"><br>
+        redirect_uri : <input type="text" name="redirect_uri" value="http://localhost:8888/loginform" readonly="true"><br>
+        grant_type : <input type="text" name="grant_type" value="authorization_code" readonly="true">
     </form>
     <div th:if="${accessToken != null}" th:text="${accessToken}"></div>
+    <div></div>
+    <a th:href="${peopleUrl}">PeopleApiUrl</a>
     <form th:if="${emailId != null}" id="google">
-        <input name="emailId" type="text" th:value="${emailId}">
-        <input name="name" type="text" th:value="${name}">
+        <input name="emailId" type="text" th:value="${emailId}" readonly="true"><br>
+        <input name="name" type="text" th:value="${name}" readonly="true"><br>
+        <input name="birthday" type="text" th:value="${birthday}" readonly="true"><br>
+        <label th:if="${gender == 'M'}">남</label><input th:if="${gender == 'M'}" name="gender" type="radio" value="M" checked="true" readonly="true">
+        <label th:if="${gender == 'W'}">여</label><input th:if="${gender == 'W'}" name="gender" type="radio" value="W" checked="ture" readonly="true"><br>
         <input type="button" onclick="googleLogin();" value="구글 로그인">
     </form>
     <!----------------------------------------------------------------------------------------------------------------------------------------------------------------------------->

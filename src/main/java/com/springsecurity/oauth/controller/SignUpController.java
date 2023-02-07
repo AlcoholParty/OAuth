@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.net.URLEncoder;
 
 @Controller
 public class SignUpController {
@@ -58,14 +59,14 @@ public class SignUpController {
     // 구글 Access_Token 발급 페이지
     @GetMapping("/loginform/google/token")
     public String googleAccessToken(String code, HttpSession httpSession, Model model) {
-        System.out.println("code : " + code);
         JsonNode jsonToken = GoogleLogin.getAccessToken(code);
-        String accessToken = jsonToken.get("access_token").toString();
+        System.out.println(jsonToken);
+        String accessToken = jsonToken.get("access_token").asText();
         System.out.println("access_token : " + accessToken);
         model.addAttribute("accessToken", accessToken);
 
         JsonNode userInfo = GoogleLogin.getGoogleUserInfo(accessToken);
-        System.out.println(userInfo.toString());
+        System.out.println(userInfo);
         String emailId = userInfo.get("email").asText();
         model.addAttribute("emailId", emailId);
         System.out.println(emailId);
@@ -75,6 +76,24 @@ public class SignUpController {
 
         JsonNode people = GoogleLogin.getGooglePeople(accessToken);
         System.out.println(people);
+        String year = people.get("birthdays").get(0).get("date").get("year").asText();
+        System.out.println(year);
+        String month = people.get("birthdays").get(0).get("date").get("month").asText();
+        System.out.println(month);
+        String day = people.get("birthdays").get(0).get("date").get("day").asText();
+        System.out.println(day);
+        String birthday = year + "-" + month + "-" + day;
+        model.addAttribute("birthday", birthday);
+        System.out.println(birthday);
+        String gender = people.get("genders").get(0).get("value").asText();
+        if ( gender.equals("male") ) {
+            gender = "M";
+        } else {
+            gender = "W";
+        }
+        model.addAttribute("gender", gender);
+        System.out.println(gender);
+
         return "SignUp/LoginForm";
     }
     @PostMapping("/loginform/google/authentication")

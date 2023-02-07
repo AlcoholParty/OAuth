@@ -14,11 +14,12 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GoogleLogin {
-    public static JsonNode getAccessToken(String authorize_code) {
+    public static JsonNode getAccessToken(String authorizeCode) {
         final String RequestUrl = "https://www.googleapis.com/oauth2/v4/token";
 
         final List<NameValuePair> postParams = new ArrayList<NameValuePair>();
@@ -26,7 +27,7 @@ public class GoogleLogin {
         postParams.add(new BasicNameValuePair("client_id", "346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com"));
         postParams.add(new BasicNameValuePair("client_secret", "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"));
         postParams.add(new BasicNameValuePair("redirect_uri", "http://localhost:8888/loginform/google/token")); // 리다이렉트 URI
-        postParams.add(new BasicNameValuePair("code", authorize_code)); // 로그인 과정중 얻은 code 값
+        postParams.add(new BasicNameValuePair("code", authorizeCode)); // 로그인 과정중 얻은 code 값
 
         final HttpClient client = HttpClientBuilder.create().build();
         final HttpPost post = new HttpPost(RequestUrl);
@@ -59,7 +60,7 @@ public class GoogleLogin {
         return returnNode;
     }
 
-    public static JsonNode getGoogleUserInfo(String authorize_code) {
+    public static JsonNode getGoogleUserInfo(String authorizeCode) {
         final String RequestUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
 
         final HttpClient client = HttpClientBuilder.create().build();
@@ -68,7 +69,7 @@ public class GoogleLogin {
         JsonNode returnNode = null;
 
         // add header
-        get.addHeader("Authorization", "Bearer " + authorize_code);
+        get.addHeader("Authorization", "Bearer " + authorizeCode);
 
         try {
             final HttpResponse response = client.execute(get);
@@ -93,18 +94,24 @@ public class GoogleLogin {
         return returnNode;
     }
 
-    public static JsonNode getGooglePeople(String authorize_code) {
-        final String RequestUrl = "https://people.googleapis.com/v1/people/me";
+    public static JsonNode getGooglePeople(String authorizeCode) {
+        final String RequestUrl = "https://people.googleapis.com/v1/people/me?" +
+                                  "personFields=birthdays" +
+                                  "&personFields=genders" +
+                                  "&personFields=phoneNumbers" +
+                                  "&key=AIzaSyDr3XNA_3hT9py0zIaHxQwIBVibhuIC_3E" +
+                                  "&access_token=" + authorizeCode;
 
         final HttpClient client = HttpClientBuilder.create().build();
         final HttpGet get = new HttpGet(RequestUrl);
 
         JsonNode returnNode = null;
-
+        // https://people.googleapis.com/v1/people/me?personFields=birthdays&personFields=genders&personFields=phoneNumbers&access_token=ya29.a0AVvZVsqBkrHEOI9uIzC767YL7To3MyzIkSweDmdRAgJzBjW2_3tjPWT1-Y1JwYcr4IdPxLtt89tJrfE-ROTe9a7bUNtlVJttFUbT9jAZ6ODTzx0dVRz1CfaTnRC0tmq6rsESgHdideu8-VclOQsgiy4BK7h32gaCgYKAeUSARMSFQGbdwaIVUNOAgRiT0dAoQ-ZPedG8w0165
         // add header
-        get.addHeader("personFields", "Bearer " + "birthdays");
-        get.addHeader("key", "Bearer " + "AIzaSyDr3XNA_3hT9py0zIaHxQwIBVibhuIC_3E");
-        get.addHeader("access_token", "Bearer " + authorize_code);
+        //get.setHeader("personFields", "Bearer " + "birthdays"); // 첫 번째 항목에 대해 다음과 같이 HttpGet 개체에서 setHeader() 메서드를 사용한다.
+        //get.addHeader("personFields", "Bearer " + "genders"); // 그런 다음 두 번째 헤더에 대해 다음과 같이 HttpGet 개체에서 addHeader() 메서드를 사용한다.
+        //get.addHeader("key", "Bearer " + "AIzaSyDr3XNA_3hT9py0zIaHxQwIBVibhuIC_3E");
+        //get.addHeader("access_token", "Bearer " + authorizeCode);
 
         try {
             final HttpResponse response = client.execute(get);
