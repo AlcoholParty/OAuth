@@ -57,7 +57,8 @@ public class SignUpController {
 ////////////////////////////// 소셜 로그인 API //////////////////////////////
     // 구글 로그인 토큰 발급 및 유저 정보 조회
     @GetMapping("/loginform/googletoken")
-    public String googleAuthentication(@RequestParam(value = "code", required = false) String code, Model model) {
+    public String googleAuthentication(String code, Model model) { // 4. 파라미터로 구글 로그인 URL을 통해 가져온 code를 받아온다.
+        // 5. 4에서 파라미터로 받아온 code를 구글 서버와 통신하는 메소드로 전달한다.
         JsonNode jsonToken = GoogleLogin.getAccessToken(code);
         String accessToken = jsonToken.get("access_token").asText();
 
