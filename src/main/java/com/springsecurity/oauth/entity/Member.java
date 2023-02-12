@@ -4,9 +4,7 @@ import com.springsecurity.oauth.dto.OAuthDTO;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -19,8 +17,11 @@ import java.util.Map;
 @Entity(name = "Member") // Entity 어노테이션 - 괄호안에는 테이블명과 똑같이 작성한다.
 public class Member {
     @Id // 기본키 어노테이션 - 기본키 설정 (PRIMARY KEY)
-    // @GeneratedValue(strategy = GenerationType.IDENTITY) - AUTO_INCREMENT - MySQL에서 시퀀스 역할을 담당한다.
-    @Column(length = 50) // 컬럼 어노테이션 - 기본키 제외 나머지 컬럼 설정 - 기본키랑 같이 쓰이면 기본키의 설정값들을 잡아줄 수 있다.
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT - MySQL에서 시퀀스 역할을 담당한다.
+    // @Column() // 컬럼 어노테이션 - 기본키 제외 나머지 컬럼 설정 - 기본키랑 같이 쓰이면 기본키의 설정값들을 잡아줄 수 있다.
+    private Integer idx;
+
+    @Column(length = 50)
     private String emailId;
 
     @Column(length = 255)
@@ -59,7 +60,7 @@ public class Member {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // DTO 구역
 
-    // 회원가입 Request DTO
+    // 회원가입 자사 Request DTO
     @Getter // getter 어노테이션
     @Setter // setter 어노테이션
     @NoArgsConstructor // 파라미터가 없는 기본 생성자 어노테이션
@@ -70,7 +71,7 @@ public class Member {
         private String emailId;
         private String pwd;
         private String name;
-        private String nickName;
+        private String nickname;
         private String birthday;
         private String gender;
         private String phoneNumber;
@@ -83,10 +84,11 @@ public class Member {
             String enPassword = passwordEncoder.encode(pwd);
             // 7. 변환된 Entity를 반환한다.
             return Member.builder()
+                    .idx(null)
                     .emailId(emailId)
                     .pwd(enPassword) // 암호화된 비밀번호 저장
                     .name(name)
-                    .nickname(nickName)
+                    .nickname(nickname)
                     .birthday(birthday)
                     .gender(gender)
                     .phoneNumber(phoneNumber)
@@ -94,11 +96,12 @@ public class Member {
                     .studyType(studyType)
                     .platform("soju") // 가입 플랫폼 설정
                     .roleName("USER") // Spring Security 권한에 USER로 설정
+                    .profileImage("noImage.jpeg") // 회원가입할때 첫 사진은 아무것도 없는 공통 사진으로 설정
                     .build();
         }
     }
 
-    // 회원가입 Response DTO
+    // 회원가입 자사 Response DTO
     @Getter
     @Setter
     @AllArgsConstructor
@@ -115,36 +118,81 @@ public class Member {
         }
     }
 
-    // Google Request DTO
+    // 회원가입 Social Request DTO
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class rqJoinSocialMember {
+        private String emailId;
+        private String name;
+        private String nickname;
+        private String birthday;
+        private String gender;
+        private String phoneNumber;
+        private String address;
+        private String studyType;
+        private String platform;
+
+        // DTO를 Entity로 변환 (빌더 방식)
+        public Member toEntity() {
+            return Member.builder()
+                    .idx(null)
+                    .emailId(emailId)
+                    .name(name)
+                    .nickname(nickname)
+                    .birthday(birthday)
+                    .gender(gender)
+                    .phoneNumber(phoneNumber)
+                    .address(address)
+                    .studyType(studyType)
+                    .platform(platform)
+                    .roleName("USER") // Spring Security 권한에 USER로 설정
+                    .profileImage("noImage.jpeg") // 회원가입할때 첫 사진은 아무것도 없는 공통 사진으로 설정
+                    .build();
+        }
+    }
+
+    // Naver 가입자 조회 Response DTO
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @ToString
-    public static class rqGoogleMember {
-        private String emailId;
-        private String name;
+    public static class rpJoinSocialMember {
+        private int idx;
+        private String errMsg;
 
-        public Member toEntity() {
-            return Member.builder()
-                    .emailId(emailId)
-                    .name(name)
-                    .build();
+        // Entity를 DTO로 변환 (생성자 방식) - Naver 가입자인 경우
+        public rpJoinSocialMember(Member member) {
+            this.idx = member.getIdx();
+        }
+
+        // Entity를 DTO로 변환 (생성자 방식) - 다른 방식의 가입자인 경우
+        public rpJoinSocialMember(String errMsg) {
+            this.idx = 0;
+            this.errMsg = errMsg;
         }
     }
 
-    // OAuth - Google DTO
+    // OAuth - Social DTO
     @Getter
     @Setter
     @NoArgsConstructor
     @ToString
-    public static class oauthGoogle {
+    public static class oauthAttributes {
         private Map<String, Object> attributes;
         private String nameAttributeKey;
         private String emailId;
         private String name;
+        private String birthday;
+        private String gender;
+        private String phoneNumber;
         private String platform;
 
+        // DTO를 Entity로 변환 (빌더 방식)
         public Member toEntity() {
             return Member.builder()
                     .name(name)
@@ -155,35 +203,62 @@ public class Member {
                     .build();
         }
 
+        // Entity를 DTO로 변환 (생성자 방식)
         @Builder
-        public oauthGoogle(Map<String, Object> attributes, String nameAttributeKey, String emailId, String name, String platform) {
-            this.attributes = attributes;
-            this.nameAttributeKey = nameAttributeKey;
-            this.emailId = emailId;
-            this.name = name;
-            this.platform = platform;
+        public oauthAttributes(Map<String, Object> attributes, String nameAttributeKey, String emailId, String name, String birthyear, String birthday, String gender, String phoneNumber, String platform) {
+            if ( "naver".equals(platform) ) {
+                this.attributes = attributes;
+                this.nameAttributeKey = nameAttributeKey;
+                this.emailId = emailId;
+                this.name = name;
+                this.birthday = birthyear + "-" + birthday;
+                this.gender = gender;
+                this.phoneNumber = phoneNumber;
+                this.platform = platform;
+            } else {
+                this.attributes = attributes;
+                this.nameAttributeKey = nameAttributeKey;
+                this.emailId = emailId;
+                this.name = name;
+                this.platform = platform;
+            }
         }
 
-        public static oauthGoogle of(String registrationId, String emailId, Map<String, Object> oAuth2User) {
-            return oauthGoogle.builder()
-                    .attributes(oAuth2User)
-                    .nameAttributeKey(emailId)
-                    .emailId((String) oAuth2User.get("email"))
-                    .name((String) oAuth2User.get("name"))
+        // 사용자 정보는 Map이기 때문에 변경해야함
+        public static oauthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
+            //네이버 로그인 인지 판단.
+            if ( "naver".equals(registrationId) ) {
+                return ofNaver(registrationId, userNameAttributeName, attributes);
+            }
+            return ofGoogle(registrationId, userNameAttributeName, attributes);
+        }
+
+        public static oauthAttributes ofNaver(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
+            // 응답 받은 사용자의 정보를 Map형태로 변경.
+            Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+            // 미리 정의한 속성으로 빌드.
+            return oauthAttributes.builder()
+                    .emailId((String) response.get("email"))
+                    .name((String) response.get("name"))
+                    .birthyear((String) response.get("birthyear"))
+                    .birthday((String) response.get("birthday"))
+                    .gender((String) response.get("gender"))
+                    .phoneNumber((String) response.get("mobile"))
                     .platform(registrationId)
+                    .attributes(response)
+                    .nameAttributeKey(userNameAttributeName)
                     .build();
         }
-    }
 
-    // OAuth - SessionUser DTO
-    @Getter
-    public static class SessionUserDTO implements Serializable {
-        private String name;
-        private String emailId;
-
-        public SessionUserDTO(Member.oauthGoogle oauthGoogle) {
-            this.name = oauthGoogle.getName();
-            this.emailId = oauthGoogle.getEmailId();
+        public static oauthAttributes ofGoogle(String registrationId, String userNameAttributeName, Map<String,Object> attributes){
+            // 미리 정의한 속성으로 빌드.
+            return oauthAttributes.builder()
+                    .name((String) attributes.get("name"))
+                    .emailId((String) attributes.get("email"))
+                    .platform(registrationId)
+                    .attributes(attributes)
+                    .nameAttributeKey(userNameAttributeName)
+                    .build();
         }
     }
 }

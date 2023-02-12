@@ -26,7 +26,7 @@ public class GoogleLogin {
         postParams.add(new BasicNameValuePair("grant_type", "authorization_code"));
         postParams.add(new BasicNameValuePair("client_id", "346535144521-qthfl467cl8jrdcdc2g8l3lvpurqsk1h.apps.googleusercontent.com"));
         postParams.add(new BasicNameValuePair("client_secret", "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"));
-        postParams.add(new BasicNameValuePair("redirect_uri", "http://localhost:8888/loginform/google/token")); // 리다이렉트 URI
+        postParams.add(new BasicNameValuePair("redirect_uri", "http://localhost:8888/loginform/googletoken")); // 리다이렉트 URI
         postParams.add(new BasicNameValuePair("code", authorizeCode)); // 로그인 과정중 얻은 code 값
 
         final HttpClient client = HttpClientBuilder.create().build();
