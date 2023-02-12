@@ -27,9 +27,9 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
             return null;
         }
 
-        Member googleMember = memberRepository.findByGoogleMember(member.getEmailId(), "google");
+        Member googleMember = memberRepository.findByGoogleMember(emailId, "google");
         if ( googleMember == null ) {
-            Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember("해당 이메일은 다른 방식으로 가입한 이력이 있습니다.\n로그인 페이지로 이동합니다.");
+            Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember("해당 유저는 다른 방식으로 가입한 이력이 있습니다.\n로그인 페이지로 이동합니다.");
             return rpJoinSocialMember;
         }
         Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember(member);
@@ -44,9 +44,9 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
             return null;
         }
 
-        Member naverMember = memberRepository.findByNaverMember(member.getEmailId(), "naver");
+        Member naverMember = memberRepository.findByNaverMember(rqMember.getEmailId(), "naver");
         if ( naverMember == null ) {
-            Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember("해당 이메일은 다른 방식으로 가입한 이력이 있습니다.\n로그인 페이지로 이동합니다.");
+            Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember("해당 유저는 다른 방식으로 가입한 이력이 있습니다.\n로그인 페이지로 이동합니다.");
             return rpJoinSocialMember;
         }
         Member.rpJoinSocialMember rpJoinSocialMember = new Member.rpJoinSocialMember(naverMember);

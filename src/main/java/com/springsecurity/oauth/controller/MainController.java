@@ -41,7 +41,6 @@ public class MainController {
         model.addAttribute("errorMsg", errorMsg);
 
         model.addAttribute("googleUrl", googleUrl);
-        System.out.println(loginErrMsg);
         model.addAttribute("loginErrMsg", loginErrMsg);
         return "SignUp/LoginForm";
     }
