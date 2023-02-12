@@ -54,7 +54,8 @@
 
                     // 인증페이지 이동
                     let url = "/loginform/naverauthentication";
-                    let param = "name=" + name +
+                    let param = "emailId=" + emailId +
+                                "&name=" + name +
                                 "&phoneNumber=" + phoneNumber;
                     sendRequest(url, param, resultNaverLogin, "POST")
                 } else {

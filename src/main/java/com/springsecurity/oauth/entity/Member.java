@@ -19,44 +19,43 @@ public class Member {
     @Id // 기본키 어노테이션 - 기본키 설정 (PRIMARY KEY)
     @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT - MySQL에서 시퀀스 역할을 담당한다.
     // @Column() // 컬럼 어노테이션 - 기본키 제외 나머지 컬럼 설정 - 기본키랑 같이 쓰이면 기본키의 설정값들을 잡아줄 수 있다.
-    private Integer idx;
+    private Long idx; // MySQL에서 AUTO_INCREMENT를 사용하면 null값이 들어가야 자동으로 숫자가 올라간다.
+                      // 하지만 long 즉, 원시타입으로 작성하면 null값을 허용하지 않기 때문에 오류가 난다.
+                      // 그래서 Long 즉, 참조타입으로 작성해야 null값을 허용해서 값이 제대로 들어가게 된다.
 
-    @Column(length = 50)
+    // length = 길이, unique = (기본값)false:유니크 해제 / true:유니크 설정, nullable = (기본값)true:눌값 허용 / false:눌값 불가
+    @Column(length = 50, unique = true, nullable = false)
     private String emailId;
 
     @Column(length = 255)
     private String pwd;
 
-    @Column(length = 10)
+    @Column(length = 10, nullable = false)
     private String name;
 
-    // length = 길이, unique = (기본값)false:유니크 해제 / true:유니크 설정, nullable = (기본값)true:눌값 허용 / false:눌값 불가
-    @Column(length = 20)
+    @Column(length = 20, unique = true, nullable = false)
     private String nickname;
 
-    @Column(length = 10)
+    @Column(length = 10, nullable = false)
     private String birthday;
 
-    @Column(length = 1)
+    @Column(length = 1, nullable = false)
     private String gender;
 
-    @Column(length = 15)
+    @Column(length = 15, unique = true, nullable = false)
     private String phoneNumber;
 
-    @Column(length = 100)
+    @Column(length = 100, nullable = false)
     private String address;
 
-    @Column(length = 10)
+    @Column(length = 10, nullable = false)
     private String studyType;
 
-    @Column(length = 10)
+    @Column(length = 10, nullable = false)
     private String platform;
 
-    @Column(length = 100)
+    @Column(length = 100, nullable = false)
     private String roleName; // Spring Security 권한 설정
-
-    @Column(length = 100)
-    private String profileImage;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // DTO 구역
 
@@ -96,7 +95,6 @@ public class Member {
                     .studyType(studyType)
                     .platform("soju") // 가입 플랫폼 설정
                     .roleName("USER") // Spring Security 권한에 USER로 설정
-                    .profileImage("noImage.jpeg") // 회원가입할때 첫 사진은 아무것도 없는 공통 사진으로 설정
                     .build();
         }
     }
@@ -150,7 +148,6 @@ public class Member {
                     .studyType(studyType)
                     .platform(platform)
                     .roleName("USER") // Spring Security 권한에 USER로 설정
-                    .profileImage("noImage.jpeg") // 회원가입할때 첫 사진은 아무것도 없는 공통 사진으로 설정
                     .build();
         }
     }
@@ -162,7 +159,7 @@ public class Member {
     @NoArgsConstructor
     @ToString
     public static class rpJoinSocialMember {
-        private int idx;
+        private long idx;
         private String errMsg;
 
         // Entity를 DTO로 변환 (생성자 방식) - Naver 가입자인 경우
@@ -195,11 +192,10 @@ public class Member {
         // DTO를 Entity로 변환 (빌더 방식)
         public Member toEntity() {
             return Member.builder()
-                    .name(name)
                     .emailId(emailId)
+                    .name(name)
                     .platform(platform)
                     .roleName("USER")
-                    .profileImage("noImage.jpeg")
                     .build();
         }
 
