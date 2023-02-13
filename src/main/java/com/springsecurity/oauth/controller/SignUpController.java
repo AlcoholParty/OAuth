@@ -121,7 +121,7 @@ public class SignUpController {
                 try {
                     // 에러 메시지를 UTF-8 형식으로 인코딩하여 로그인 페이지로 리다이렉트한다.
                     return "redirect:/loginform?loginErrMsg=" + URLEncoder.encode(rpJoinSocialMember.getErrMsg(), "UTF-8");
-                } catch (UnsupportedEncodingException e) {
+                } catch (UnsupportedEncodingException e) { // 지원되지 않는 인코딩 예외
                     throw new RuntimeException(e);
                 }
             // 49-2. Idx가 0이 아닐 경우 - 구글로 가입한 유저
