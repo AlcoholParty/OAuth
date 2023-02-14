@@ -7,7 +7,7 @@
 <body>
     <h1>여기는 구글 회원가입하는 곳입니다.</h1>
     <form action="/loginform/googlejoin" method="post" th:object="${memberDTO}">
-        <!-- 어느 소셜 가입자인지 구별 -->
+        <!-- 어느 소셜 플랫폼 가입자인지 구별 -->
         <input name="platform" type="hidden" value="google">
         <ul>
             <!-- th:for="th:field에 작성한 변수명" - label과 input을 연결 해준다. -->

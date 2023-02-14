@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                  // Remember me에서 DB에 있는 사용자 계정을 조회할때 사용할 서비스
 
     @Autowired
-    SignUpOAuthService signUpOAuthService;
+    SignUpOAuthService signUpOAuthService; // OAuth2UserService를 implements한 서비스
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -108,9 +108,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // OAuth 2.0
         http
-                .oauth2Login()
-                        .userInfoEndpoint()
-                                .userService(signUpOAuthService);
+                .oauth2Login() // OAuth2 로그인 기능에 대한 여러 설정의 진입점이다.
+                        .userInfoEndpoint() // OAuth2 로그인 성공 이후 사용자 정보를 가져올 때의 설정들을 담당한다.
+                                .userService(signUpOAuthService); // 소셜 로그인 성공 후속 조치를 진행할 UserService 인터페이스의 구현체를 등록한다.
 
         // Remember Me 인증 (자동 로그인)
         http

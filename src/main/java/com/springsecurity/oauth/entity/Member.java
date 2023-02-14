@@ -152,7 +152,7 @@ public class Member {
         }
     }
 
-    // Naver 가입자 조회 Response DTO
+    // Social 가입자 조회 Response DTO
     @Getter
     @Setter
     @AllArgsConstructor
@@ -160,17 +160,17 @@ public class Member {
     @ToString
     public static class rpJoinSocialMember {
         private long idx;
-        private String errMsg;
+        private String errMsg; // 에러 메시지 변수
 
-        // Entity를 DTO로 변환 (생성자 방식) - Naver 가입자인 경우
+        // Entity를 DTO로 변환 (생성자 방식) - Social 가입자인 경우
         public rpJoinSocialMember(Member member) {
             this.idx = member.getIdx();
         }
 
-        // Entity를 DTO로 변환 (생성자 방식) - 다른 방식의 가입자인 경우
-        public rpJoinSocialMember(String errMsg) {
-            this.idx = 0;
-            this.errMsg = errMsg;
+        // Entity를 DTO로 변환 (생성자 방식) - 자사 플랫폼의 가입자인 경우
+        public rpJoinSocialMember(String errMsg) { // 파라미터로 서비스에서 넘어온 에러 메시지를 받아온다.
+            this.idx = 0; // idx는 0으로 고정해서 에러 체크값으로 사용한다.
+            this.errMsg = errMsg; // errMsg는 받아온 에러 메시지를 저장한다.
         }
     }
 
@@ -199,61 +199,80 @@ public class Member {
                     .build();
         }
 
-        // Entity를 DTO로 변환 (생성자 방식)
+        // 10. Entity를 DTO로 변환 (생성자 방식)
         @Builder
-        public oauthAttributes(Map<String, Object> attributes, String nameAttributeKey, String emailId, String name, String birthyear, String birthday, String gender, String phoneNumber, String platform) {
+        public oauthAttributes(Map<String, Object> attributes,
+                               String nameAttributeKey,
+                               String emailId,
+                               String name,
+                               String birthyear,
+                               String birthday,
+                               String gender,
+                               String phoneNumber,
+                               String platform) { // 11. 파라미터로 9에서 넘어온 값들을 받아온다.
+            // 12. 11에서 파라미터로 가져온 값중 플랫폼을 가져와 어느 플랫폼으로 로그인 진행중인지 체크한다.
+            // 12-1. 네이버 로그인일 경우
             if ( "naver".equals(platform) ) {
-                this.attributes = attributes;
-                this.nameAttributeKey = nameAttributeKey;
-                this.emailId = emailId;
-                this.name = name;
-                this.birthday = birthyear + "-" + birthday;
-                this.gender = gender;
-                this.phoneNumber = phoneNumber;
-                this.platform = platform;
+                this.attributes = attributes; // 유저 정보 Map
+                this.nameAttributeKey = nameAttributeKey; // 필드값
+                this.emailId = emailId; // 이메일은 아이디로 전달한다.
+                this.name = name; // 이름
+                this.birthday = birthyear + "-" + birthday; // 생년월일은 DB 규칙에 맞게 생년과 생일을 합쳐서 전달한다.
+                this.gender = gender; // 성별
+                this.phoneNumber = phoneNumber; // 핸드폰 번호
+                this.platform = platform; // 플랫폼
+            // 12-2. 구글 로그인일 경우
             } else {
-                this.attributes = attributes;
-                this.nameAttributeKey = nameAttributeKey;
-                this.emailId = emailId;
-                this.name = name;
-                this.platform = platform;
+                this.attributes = attributes; // 유저 정보 Map
+                this.nameAttributeKey = nameAttributeKey; // 필드값
+                this.emailId = emailId; // 이메일은 아이디로 전달한다.
+                this.name = name; // 이름
+                this.platform = platform; // 플랫폼
             }
         }
 
-        // 사용자 정보는 Map이기 때문에 변경해야함
-        public static oauthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
-            //네이버 로그인 인지 판단.
+        // 로그인한 플랫폼 구별용
+        public static oauthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes) { // 7. 파라미터로 서비스에서 넘어온 플랫폼과 필드값과 DTO를 받아온다.
+            // 8. 7에서 파라미터로 가져온 값중 플랫폼을 가져와 어느 플랫폼으로 로그인 진행중인지 체크한다.
+            // 8-1. 네이버 로그인일 경우
             if ( "naver".equals(registrationId) ) {
+                // 8-1-1. 네이버 로그인 메소드로 7에서 받아온 값들을 모두 전달한다.
                 return ofNaver(registrationId, userNameAttributeName, attributes);
+            // 8-2. 구글 로그인일 경우
+            } else {
+                // 8-2-1. 구글 로그인 메소드로 7에서 받아온 값들을 모두 전달한다.
+                return ofGoogle(registrationId, userNameAttributeName, attributes);
             }
-            return ofGoogle(registrationId, userNameAttributeName, attributes);
         }
 
-        public static oauthAttributes ofNaver(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
-            // 응답 받은 사용자의 정보를 Map형태로 변경.
+        // 9. 각 로그인 플랫폼에 해당하는 메소드로 이동한다.
+        // 9-1. 네이버 로그인
+        public static oauthAttributes ofNaver(String registrationId, String userNameAttributeName, Map<String, Object> attributes) { // 9-1-1. 파라미터로 8-1-1에서 넘어온 플랫폼과 필드값과 DTO를 받아온다.
+            // 9-1-2. 네이버는 구글이랑 다르게 attributes가 유저 정보만 깔끔하게 들어오는게 아니기에 내부에서 유저 정보를 가지고있는 "response"를 가져와 Map으로 새로 만든다.
             Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-            // 미리 정의한 속성으로 빌드.
+            // 9-1-3. Entity를 DTO로 변환하는 메소드로 빌드한다.
             return oauthAttributes.builder()
-                    .emailId((String) response.get("email"))
-                    .name((String) response.get("name"))
-                    .birthyear((String) response.get("birthyear"))
-                    .birthday((String) response.get("birthday"))
-                    .gender((String) response.get("gender"))
-                    .phoneNumber((String) response.get("mobile"))
-                    .platform(registrationId)
-                    .attributes(response)
-                    .nameAttributeKey(userNameAttributeName)
+                    // (String) - 값을 받는쪽의 타입은 String인데, Map에서 키로 가져온 값의 타입은 Object이기 때문에, 이를 String 타입으로 변환한다.
+                    .emailId((String) response.get("email")) // 여기서 이메일은 아이디가 된다.
+                    .name((String) response.get("name")) // 이름
+                    .birthyear((String) response.get("birthyear")) // 생년
+                    .birthday((String) response.get("birthday")) // 생일
+                    .gender((String) response.get("gender")) // 성별
+                    .phoneNumber((String) response.get("mobile")) // 핸드폰 번호
+                    .platform(registrationId) // 플랫폼
+                    .attributes(response) // 57-1-2에서 새로 만든 유저 정보 Map
+                    .nameAttributeKey(userNameAttributeName) // 필드값
                     .build();
         }
-
-        public static oauthAttributes ofGoogle(String registrationId, String userNameAttributeName, Map<String,Object> attributes){
-            // 미리 정의한 속성으로 빌드.
+        // 9-2. 구글 로그인
+        public static oauthAttributes ofGoogle(String registrationId, String userNameAttributeName, Map<String,Object> attributes){ // 9-2-1. 파라미터로 8-2-1에서 넘어온 플랫폼과 필드값과 DTO를 받아온다.
+            // 9-2-2. Entity를 DTO로 변환하는 메소드로 빌드한다.
             return oauthAttributes.builder()
-                    .name((String) attributes.get("name"))
-                    .emailId((String) attributes.get("email"))
-                    .platform(registrationId)
-                    .attributes(attributes)
-                    .nameAttributeKey(userNameAttributeName)
+                    .emailId((String) attributes.get("email")) // 여기서 이메일은 아이디가 된다.
+                    .name((String) attributes.get("name")) // 이름
+                    .platform(registrationId) // 플랫폼
+                    .attributes(attributes) // 유저 정보 Map
+                    .nameAttributeKey(userNameAttributeName) // 필드값
                     .build();
         }
     }

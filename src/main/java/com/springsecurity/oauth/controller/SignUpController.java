@@ -116,7 +116,7 @@ public class SignUpController {
         // 48-2. 반환받은 DTO가 있는 경우 - 구글 가입자 or 타 플랫폼 가입자
         } else {
             // 49. 받환받은 DTO 값중 Idx를 체크한다.
-            // 49-1. Idx가 0이일 경우 - 구글 이메일을 사용하여 다른 플랫폼으로 가입한 유저
+            // 49-1. idx가 0이일 경우 - 구글 이메일을 사용하여 다른 플랫폼으로 가입한 유저
             if ( rpJoinSocialMember.getIdx() == 0 ) {
                 try {
                     // 에러 메시지를 UTF-8 형식으로 인코딩하여 로그인 페이지로 리다이렉트한다.
@@ -124,7 +124,7 @@ public class SignUpController {
                 } catch (UnsupportedEncodingException e) { // 지원되지 않는 인코딩 예외
                     throw new RuntimeException(e);
                 }
-            // 49-2. Idx가 0이 아닐 경우 - 구글로 가입한 유저
+            // 49-2. idx가 0이 아닐 경우 - 구글로 가입한 유저
             } else {
                 // 49-2-1. Spring Security가 관리하고 있는 OAuth2를 통해 OAuth2UserService로 리다이렉트한다.
                 return "redirect:/oauth2/authorization/google";
