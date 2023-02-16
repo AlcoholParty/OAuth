@@ -59,7 +59,7 @@ public class Member {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // DTO 구역
 
-    // 회원가입 자사 Request DTO
+    // 자사 회원가입 Request DTO
     @Getter // getter 어노테이션
     @Setter // setter 어노테이션
     @NoArgsConstructor // 파라미터가 없는 기본 생성자 어노테이션
@@ -99,7 +99,7 @@ public class Member {
         }
     }
 
-    // 회원가입 자사 Response DTO
+    // 자사 회원가입 Response DTO
     @Getter
     @Setter
     @AllArgsConstructor
@@ -116,7 +116,7 @@ public class Member {
         }
     }
 
-    // 회원가입 Social Request DTO
+    // Social 회원가입 Request DTO
     @Getter
     @Setter
     @NoArgsConstructor

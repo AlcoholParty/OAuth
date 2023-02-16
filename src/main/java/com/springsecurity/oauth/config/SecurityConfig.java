@@ -53,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 //.antMatcher("/") // 특정 경로를 지정, 해당 메소드를 생략하면 모든 경로에 대해 검색하게 된다.
                 .authorizeRequests() // 보안 검사기능 시작
-                .antMatchers("/", "/joinform/**", "/loginform/**").permitAll() // 해당경로에 대한 모든 접근을 허용한다.
+                .antMatchers("/", "/n", "/joinform/**", "/loginform/**").permitAll() // 해당경로에 대한 모든 접근을 허용한다.
                 .antMatchers("/user").hasRole("USER") // /로그인은 USER권한을 가지고 있는 사용자에게만 허용한다.
                 .antMatchers("/mypage/pay").access("hasRole('ADMIN')")
                 .anyRequest().authenticated(); // 나머지 요청들은 권한의 종류에 상관 없이 권한이 있어야 접근 가능하다.
@@ -200,9 +200,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .ignoring().antMatchers("/css/**", "/js/**", "/img/**", "/lib/**");
     }
 
-    // 비밀번호 암호화 메소드
+    // 비밀번호 암호화
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // BCryptPasswordEncoder - BCrypt 해싱 함수(BCrypt hashing function)를 사용해서 비밀번호를 인코딩해주는 메소드와
+        //                         로그인 진행중인 유저에 의해 제출된 비밀번호와 저장소에 저장되어 있는 비밀번호의 일치 여부를 확인해주는 메소드를 제공한다.
+        //                         PasswordEncoder 인터페이스를 구현한 클래스이다.
         return new BCryptPasswordEncoder();
     }
 
