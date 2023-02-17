@@ -65,21 +65,25 @@
         });
         function resultNaverLogin() {
             if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                // 네이버 로그인 인증 컨트롤러에서 넘어온 반환값을 받아온다.
                 let data = xhr.responseText;
 
+                // 반환값이 "0"과 "1"이 아닌 경우 - 타 플랫폼 가입자 - 에러
                 if ( data != "0" && data != "1" ) {
                     alert(data);
                     location.href = "/loginform";
                     return;
+                // 반환값이 "1"인 경우 - 네이버 가입자 - 로그인
                 } else if ( data == "1" ) {
                     location.href = "/oauth2/authorization/naver";
                     return;
+                // 반환값이 "0"인 경우 - 미가입자 - 회원가입
+                } else {
+                    // form태그
+                    let f = document.getElementById("f");
+                    // action과 method는 위에 form태그에서 미리 다 설정해놨기에 바로 submit()하면 된다.
+                    f.submit();
                 }
-
-                // form태그
-                let f = document.getElementById("f");
-
-                f.submit();
             }
         }
     </script>

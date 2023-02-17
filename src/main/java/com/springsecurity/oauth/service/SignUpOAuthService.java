@@ -21,12 +21,12 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
     @Autowired
     MemberRepository memberRepository;
 
-    // 구글 로그인 인증 - 비가입자, 가입자, 중복 가입자 비교
+    // 구글 로그인 인증 - 미가입자, 가입자, 중복 가입자 비교
     public Member.rpJoinSocialMember findByJoinGoogleMember(String emailId) { // 43. 파라미터로 컨트롤러에서 넘어온 아이디를 받아온다.
         // 44. 43에서 파라미터로 받아온 아이디로 유저를 조회하고, 조회된 값을 받아온다.
         Member member = memberRepository.findByEmailId(emailId);
         // 45. 조회된 값이 있는지 체크한다.
-        // 45-1. 조회된 값이 없는 경우 - 비가입자
+        // 45-1. 조회된 값이 없는 경우 - 미가입자
         if ( member == null ) {
             // 45-1-1. 눌값을 반환한다.
             return null;
@@ -51,14 +51,14 @@ public class SignUpOAuthService implements OAuth2UserService<OAuth2UserRequest, 
         }
     }
 
-    // 네이버 로그인 인증 - 비가입자, 가입자, 중복 가입자 비교
+    // 네이버 로그인 인증 - 미가입자, 가입자, 중복 가입자 비교
     public Member.rpJoinSocialMember findByJoinNaverMember(Member.rqJoinSocialMember rqJoinSocialMember) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환한다.
         Member rqMember = rqJoinSocialMember.toEntity();
-        // 5. 3에서 변환한 Entity 값 중 이름과, 휴대폰 번호로 유저를 조회하고, 조회된 값을 받아온다.
+        // 5. 3에서 변환한 Entity 값 중 이름과, 휴대폰 번호로 유저를 조회하고, 조회된 값을 받아온다. (@Query 어노테이션 사용)
         Member member = memberRepository.findByJoinMember(rqMember.getName(), rqMember.getPhoneNumber());
         // 6. 조회된 값이 있는지 체크한다.
-        // 6-1. 조회된 값이 없는 경우 - 비가입자
+        // 6-1. 조회된 값이 없는 경우 - 미가입자
         if ( member == null ) {
             // 6-1-1. 눌값을 반환한다.
             return null;

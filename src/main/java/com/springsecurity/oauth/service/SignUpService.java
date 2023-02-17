@@ -17,7 +17,7 @@ public class SignUpService implements UserDetailsService {
     // 멤버 DB
     @Autowired
     MemberRepository memberRepository;
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // 회원가입
     public Member.rpJoinMember joinMember(Member.rqJoinMember rqJoinMember, PasswordEncoder passwordEncoder) { // 3. 파라미터로 컨트롤러에서 넘어온 DTO와 비밀번호 암호화 메소드를 받아온다.
         // 4. 3에서 파라미터로 받아온 DTO를 Entity로 변환하면서 3에서 파라미터로 같이 받아온 비밀번호 암호화 메소드를 파라미터로 넘겨준다.
